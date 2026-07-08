@@ -1,4 +1,4 @@
-const CACHE = 'reloj-ar-v2';
+const CACHE = 'reloj-ar-v3';
 const URLS = [
     '/reloj-ar-qr/',
     '/reloj-ar-qr/index.html',
