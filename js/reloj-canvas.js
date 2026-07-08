@@ -1,7 +1,15 @@
 function horaBolivia() {
     const ahora = new Date();
-    const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
-    return new Date(utc + (-4 * 3600000));
+    const fmt = new Intl.DateTimeFormat('en', {
+        timeZone: 'America/La_Paz',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false
+    });
+    const partes = fmt.formatToParts(ahora);
+    const val = t => parseInt(partes.find(p => p.type === t).value, 10);
+    const b = new Date();
+    b.setHours(val('hour'), val('minute'), val('second'), ahora.getMilliseconds());
+    return b;
 }
 
 const RelojCanvas = {
