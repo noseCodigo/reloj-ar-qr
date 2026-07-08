@@ -116,7 +116,7 @@
         ctx.translate(qrSuave.cx, qrSuave.cy);
         ctx.rotate(qrSuave.angulo);
         ctx.scale(escala, escala);
-        RelojCanvas.dibujar(ctx, 0, 0, TAMANO_CLOCK, new Date());
+        RelojCanvas.dibujar(ctx, 0, 0, TAMANO_CLOCK, horaBolivia());
         ctx.restore();
     }
 
@@ -205,9 +205,10 @@
             }
         }
 
-        const hh = new Date().getHours().toString().padStart(2, '0');
-        const mm = new Date().getMinutes().toString().padStart(2, '0');
-        const ss = new Date().getSeconds().toString().padStart(2, '0');
+        const b = horaBolivia();
+        const hh = b.getHours().toString().padStart(2, '0');
+        const mm = b.getMinutes().toString().padStart(2, '0');
+        const ss = b.getSeconds().toString().padStart(2, '0');
         estadoTexto.textContent = `${hh}:${mm}:${ss}`;
 
         animacionId = requestAnimationFrame(loop);
