@@ -87,13 +87,13 @@ const RelojCanvas = {
         const segundos = fecha.getSeconds();
         const ms = fecha.getMilliseconds();
 
-        const angHora = ((horas % 12) * 30 + minutos * 0.5) * Math.PI / 180;
-        const angMinuto = (minutos * 6 + segundos * 0.1) * Math.PI / 180;
+        const angHora = ((horas % 12) * 30 + minutos * 0.5) * Math.PI / 180 - Math.PI / 2;
+        const angMinuto = (minutos * 6 + segundos * 0.1) * Math.PI / 180 - Math.PI / 2;
         let angSegundo;
         if (e.segunderoSuave) {
-            angSegundo = ((segundos * 1000 + ms) / 1000 * 6) * Math.PI / 180;
+            angSegundo = ((segundos * 1000 + ms) / 1000 * 6) * Math.PI / 180 - Math.PI / 2;
         } else {
-            angSegundo = (segundos * 6) * Math.PI / 180;
+            angSegundo = (segundos * 6) * Math.PI / 180 - Math.PI / 2;
         }
 
         this._dibujarBisel(ctx, cx, cy, r, e);
