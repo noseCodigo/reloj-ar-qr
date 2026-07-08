@@ -1,9 +1,8 @@
-const CACHE = 'reloj-ar-v4';
+const CACHE = 'reloj-ar-v5';
 const URLS = [
     '/reloj-ar-qr/',
     '/reloj-ar-qr/index.html',
     '/reloj-ar-qr/styles/style.css',
-    '/reloj-ar-qr/js/jsqr.min.js',
     '/reloj-ar-qr/js/reloj-canvas.js',
     '/reloj-ar-qr/js/app.js',
     '/reloj-ar-qr/manifest.json'

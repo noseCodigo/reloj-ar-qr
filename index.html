@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Reloj AR - QR en tu muñeca</title>
+    <title>Reloj QR</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,54 +12,13 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <video id="video" autoplay playsinline muted></video>
     <canvas id="overlay"></canvas>
-
-    <div id="loading" class="activo">
-        <div class="loader-icon">
-            <svg viewBox="0 0 100 100" width="80" height="80">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="3" opacity="0.3"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="3"
-                    stroke-dasharray="251" stroke-dashoffset="0" stroke-linecap="round">
-                    <animate attributeName="stroke-dashoffset" from="251" to="0" dur="1.5s" repeatCount="indefinite"/>
-                </circle>
-            </svg>
-        </div>
-        <p class="loader-text">Iniciando cámara...</p>
-    </div>
-
-    <div id="reloj-encontrado" class="oculto">
-        <div class="badge encontrado-badge">RELOJ ACTIVO</div>
-    </div>
-
-    <div id="reloj-perdido" class="oculto">
-        <div class="badge perdido-badge">BUSCANDO QR...</div>
-        <div class="qr-guia">
-            <div class="qr-corners"></div>
-            <p class="qr-instruccion">Enfoca el código QR en tu muñeca</p>
-        </div>
-    </div>
-
-    <div id="info-hora">
-        <span id="estado-texto">--:--:--</span>
-    </div>
-
-    <div id="install-banner" class="oculto">
-        <div class="install-content">
-            <p class="install-text">📲 Instala esta app para acceder directamente desde tu pantalla de inicio</p>
-            <div class="install-actions">
-                <button id="btn-install" class="btn-install">Instalar App</button>
-                <button id="btn-dismiss-install" class="btn-dismiss">Ahora no</button>
-            </div>
-        </div>
-    </div>
 
     <button id="btn-estilo" class="btn-estilo">
         <span id="nombre-estilo">Clásico Premium</span>
         <span class="btn-icono">↻</span>
     </button>
 
-    <script src="js/jsqr.min.js"></script>
     <script src="js/reloj-canvas.js"></script>
     <script src="js/app.js"></script>
     <script>
