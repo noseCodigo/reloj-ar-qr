@@ -24,7 +24,7 @@
 
     const TIMEOUT_QR = 3000;
     const TIMEOUT_FANTASMA = 6000;
-    const FRACC_PANTALLA = 0.56;
+    const FRACC_PANTALLA = 0.73;
 
     const ofsCanvas = document.createElement('canvas');
     const ofsCtx = ofsCanvas.getContext('2d', { willReadFrequently: true });
