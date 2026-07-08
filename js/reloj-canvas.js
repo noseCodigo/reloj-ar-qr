@@ -1,3 +1,9 @@
+function horaBolivia() {
+    const ahora = new Date();
+    const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+    return new Date(utc + (-4 * 3600000));
+}
+
 const RelojCanvas = {
     estilos: [
         {
@@ -65,6 +71,7 @@ const RelojCanvas = {
     },
 
     dibujar(ctx, cx, cy, size, fecha) {
+        if (!fecha) fecha = horaBolivia();
         const e = this.estilo;
         const r = size / 2;
         const horas = fecha.getHours();
