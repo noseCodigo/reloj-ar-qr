@@ -18,10 +18,14 @@
     let qrSuave = null;
     let ultimoTiempoQR = 0;
     let animacionInicio = 0;
+    let framesSaltados = 0;
 
     const TAMANO_CLOCK = 200;
-    const SMOOTHING = 0.25;
-    const TIMEOUT_QR = 600;
+    const ESCALA_RELOJ = 1.0;
+    const SMOOTHING = 0.35;
+    const TIMEOUT_QR = 3000;
+    const TIMEOUT_FANTASMA = 6000;
+    const RES_MAX = 960;
 
     const ofsCanvas = document.createElement('canvas');
     const ofsCtx = ofsCanvas.getContext('2d', { willReadFrequently: true });
@@ -31,8 +35,8 @@
             stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
                 },
                 audio: false
             });
@@ -49,7 +53,7 @@
             animacionInicio = performance.now();
             loop();
         } catch (err) {
-            console.error('Error cámara:', err);
+            console.error('Error camara:', err);
             loading.innerHTML = `
                 <div class="error-msg">
                     <h2>Error de cámara</h2>
@@ -71,7 +75,7 @@
         const h = video.videoHeight;
         if (w === 0 || h === 0) return null;
 
-        const escala = Math.min(640 / w, 480 / h);
+        const escala = Math.min(RES_MAX / w, RES_MAX * 0.75 / h);
         const sw = Math.round(w * escala);
         const sh = Math.round(h * escala);
 
@@ -81,7 +85,7 @@
 
         const imageData = ofsCtx.getImageData(0, 0, sw, sh);
         const codigo = jsQR(imageData.data, sw, sh, {
-            inversionAttempts: 'dontInvert'
+            inversionAttempts: 'attemptBoth'
         });
 
         if (!codigo || !codigo.location) return null;
@@ -102,8 +106,23 @@
         return { cx, cy, size, angulo };
     }
 
+    function dibujarReloj(opacidad) {
+        if (!qrSuave) return;
+
+        const escala = (qrSuave.size / TAMANO_CLOCK) * ESCALA_RELOJ;
+
+        ctx.save();
+        ctx.globalAlpha = opacidad;
+        ctx.translate(qrSuave.cx, qrSuave.cy);
+        ctx.rotate(qrSuave.angulo);
+        ctx.scale(escala, escala);
+        RelojCanvas.dibujar(ctx, 0, 0, TAMANO_CLOCK, new Date());
+        ctx.restore();
+    }
+
     function loop(timestamp) {
-        const info = procesarQR();
+        framesSaltados = (framesSaltados + 1) % 2;
+        const info = framesSaltados === 0 ? procesarQR() : null;
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -138,34 +157,31 @@
             if (diffAng < -Math.PI) diffAng += Math.PI * 2;
             qrSuave.angulo += diffAng * SMOOTHING * suavizado;
 
-            const escala = (qrSuave.size / TAMANO_CLOCK) * 1.8 * suavizado;
-
-            ctx.save();
-            ctx.translate(qrSuave.cx, qrSuave.cy);
-            ctx.rotate(qrSuave.angulo);
-            ctx.scale(escala, escala);
-            RelojCanvas.dibujar(ctx, 0, 0, TAMANO_CLOCK, new Date());
-            ctx.restore();
+            dibujarReloj(1);
 
         } else {
-            if (qrActivo && performance.now() - ultimoTiempoQR > TIMEOUT_QR) {
+            const tiempoSinQR = performance.now() - ultimoTiempoQR;
+
+            if (qrActivo && tiempoSinQR > TIMEOUT_QR) {
                 qrActivo = false;
-                qrSuave = null;
                 relojEncontrado.classList.remove('activo');
                 relojEncontrado.classList.add('oculto');
-                relojPerdido.classList.remove('oculto');
-                relojPerdido.classList.add('activo');
             }
 
-            if (qrSuave) {
-                const escala = (qrSuave.size / TAMANO_CLOCK) * 1.8;
-                ctx.save();
-                ctx.translate(qrSuave.cx, qrSuave.cy);
-                ctx.rotate(qrSuave.angulo);
-                ctx.scale(escala, escala);
-                RelojCanvas.dibujar(ctx, 0, 0, TAMANO_CLOCK, new Date());
-                ctx.restore();
+            if (qrSuave && tiempoSinQR < TIMEOUT_FANTASMA) {
+                if (tiempoSinQR < TIMEOUT_QR) {
+                    dibujarReloj(1);
+                } else {
+                    const opacidad = 1 - (tiempoSinQR - TIMEOUT_QR) / (TIMEOUT_FANTASMA - TIMEOUT_QR);
+                    dibujarReloj(Math.max(0, opacidad));
+                }
             } else {
+                if (qrSuave) {
+                    qrSuave = null;
+                    relojPerdido.classList.remove('oculto');
+                    relojPerdido.classList.add('activo');
+                }
+
                 const cx = canvas.width / 2;
                 const cy = canvas.height / 2;
                 const r = Math.min(canvas.width, canvas.height) * 0.08;
@@ -186,7 +202,6 @@
                 ctx.moveTo(cx, cy - r * 1.2);
                 ctx.lineTo(cx, cy + r * 1.2);
                 ctx.stroke();
-                ctx.setLineDash([]);
             }
         }
 
